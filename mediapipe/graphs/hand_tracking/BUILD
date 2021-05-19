@@ -61,7 +61,9 @@ cc_library(
     deps = [
         "//mediapipe/calculators/core:constant_side_packet_calculator",
         "//mediapipe/calculators/core:flow_limiter_calculator",
+        "//mediapipe/calculators/custom:gesture_recognizer_calculator",
         "//mediapipe/graphs/hand_tracking/subgraphs:hand_renderer_gpu",
+        "//mediapipe/graphs/hand_tracking/subgraphs:hand_gesture_renderer_gpu",
         "//mediapipe/modules/hand_landmark:hand_landmark_tracking_gpu",
     ],
 )
@@ -70,6 +72,13 @@ mediapipe_binary_graph(
     name = "hand_tracking_mobile_gpu_binary_graph",
     graph = "hand_tracking_mobile.pbtxt",
     output_name = "hand_tracking_mobile_gpu.binarypb",
+    deps = [":mobile_calculators"],
+)
+
+mediapipe_binary_graph(
+    name = "hand_tracking_gesture_mobile_gpu_binary_graph",
+    graph = "hand_tracking_gesture_mobile.pbtxt",
+    output_name = "hand_tracking_gesture_mobile_gpu.binarypb",
     deps = [":mobile_calculators"],
 )
 
