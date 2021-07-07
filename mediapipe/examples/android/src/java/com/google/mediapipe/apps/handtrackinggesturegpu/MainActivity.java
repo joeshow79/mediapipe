@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.util.Log;
 import com.google.mediapipe.formats.proto.LandmarkProto.NormalizedLandmark;
 import com.google.mediapipe.formats.proto.LandmarkProto.NormalizedLandmarkList;
+import com.google.mediapipe.formats.proto.LandmarkProto.GestureText;
 import com.google.mediapipe.framework.AndroidPacketCreator;
 import com.google.mediapipe.framework.Packet;
 import com.google.mediapipe.framework.PacketGetter;
@@ -31,6 +32,7 @@ public class MainActivity extends com.google.mediapipe.apps.basic.MainActivity {
 
   private static final String INPUT_NUM_HANDS_SIDE_PACKET_NAME = "num_hands";
   private static final String OUTPUT_LANDMARKS_STREAM_NAME = "hand_landmarks";
+  private static final String OUTPUT_GESTURE_TEXT = "gesture_text";
   // Max number of hands to detect/process.
   private static final int NUM_HANDS = 2;
 
@@ -45,7 +47,8 @@ public class MainActivity extends com.google.mediapipe.apps.basic.MainActivity {
 
     // To show verbose logging, run:
     // adb shell setprop log.tag.MainActivity VERBOSE
-    if (Log.isLoggable(TAG, Log.VERBOSE)) {
+    //if (Log.isLoggable(TAG, Log.VERBOSE))
+    {
       processor.addPacketCallback(
           OUTPUT_LANDMARKS_STREAM_NAME,
           (packet) -> {
@@ -58,6 +61,24 @@ public class MainActivity extends com.google.mediapipe.apps.basic.MainActivity {
                     + packet.getTimestamp()
                     + "] "
                     + getMultiHandLandmarksDebugString(multiHandLandmarks));
+          });
+    }
+    {
+      processor.addPacketCallback(
+          OUTPUT_GESTURE_TEXT,
+          (packet) -> {
+              Log.v(TAG, "Received gesture text packet [TS:"
+                    + packet.getTimestamp()
+                    + "] ");
+
+              List<GestureText> texts =
+                  PacketGetter.getProtoVector(packet, GestureText.parser());
+
+              Log.v(TAG, "gesture recognized size: " + texts.size());
+
+              for(GestureText t : texts) {
+                Log.v(TAG, "gesture recognized: " + t.getText());
+              }
           });
     }
   }

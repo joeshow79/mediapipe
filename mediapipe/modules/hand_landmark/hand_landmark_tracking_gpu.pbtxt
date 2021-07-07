@@ -38,6 +38,8 @@ output_stream: "HAND_ROIS_FROM_LANDMARKS:hand_rects"
 # (std::vector<NormalizedRect>)
 output_stream: "HAND_ROIS_FROM_PALM_DETECTIONS:hand_rects_from_palm_detections"
 
+output_stream: "HAND_GESTURE_TEXT:multi_hand_gesture_text"
+
 # Defines whether landmarks on the previous image should be used to help
 # localize landmarks on the current image.
 node {
@@ -211,6 +213,23 @@ node {
   input_stream: "ITEM:single_hand_landmarks"
   input_stream: "BATCH_END:hand_rects_timestamp"
   output_stream: "ITERABLE:multi_hand_landmarks"
+}
+
+# According to landmarks to recognize gesture
+node {
+  calculator: "GestureRecognizerCalculator"
+  input_stream: "NORM_LANDMARKS:single_hand_landmarks"
+  output_stream: "GESTURE_TEXT:single_hand_gesture_text"
+}
+
+# Collects a text object for each hand gesture into a vector. Upon receiving the
+# BATCH_END timestamp, outputs the vector of text at the BATCH_END
+# timestamp.
+node {
+  calculator: "EndLoopStringVectorCalculator"
+  input_stream: "ITEM:single_hand_gesture_text"
+  input_stream: "BATCH_END:hand_rects_timestamp"
+  output_stream: "ITERABLE:multi_hand_gesture_text"
 }
 
 # Collects a NormalizedRect for each hand into a vector. Upon receiving the

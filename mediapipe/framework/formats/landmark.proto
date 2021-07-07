@@ -61,3 +61,7 @@ message NormalizedLandmark {
 message NormalizedLandmarkList {
   repeated NormalizedLandmark landmark = 1;
 }
+
+message GestureText {
+  required string text = 1;
+}

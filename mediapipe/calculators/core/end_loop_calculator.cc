@@ -46,4 +46,9 @@ REGISTER_CALCULATOR(EndLoopClassificationListCalculator);
 typedef EndLoopCalculator<std::vector<TfLiteTensor>> EndLoopTensorCalculator;
 REGISTER_CALCULATOR(EndLoopTensorCalculator);
 
+// typedef EndLoopCalculator<std::vector<std::string>>
+typedef EndLoopCalculator<std::vector<::mediapipe::GestureText>>
+    EndLoopStringVectorCalculator;
+REGISTER_CALCULATOR(EndLoopStringVectorCalculator);
+
 }  // namespace mediapipe

@@ -10,9 +10,9 @@ namespace mediapipe
 {
 namespace
 {
-constexpr char normRectTag[] = "NORM_RECT";
+//constexpr char normRectTag[] = "NORM_RECT";
 constexpr char normalizedLandmarkListTag[] = "NORM_LANDMARKS";
-constexpr char recognizedHandGestureTag[] = "RECOGNIZED_HAND_GESTURE";
+constexpr char recognizedHandGestureTag[] = "GESTURE_TEXT";
 
 } // namespace
 
@@ -51,15 +51,16 @@ REGISTER_CALCULATOR(GestureRecognizerCalculator);
     // Set normalizedLandmarkListTag to receive a NormalizedLandmarkList as input
     cc->Inputs().Tag(normalizedLandmarkListTag).Set<NormalizedLandmarkList>();
 
-    // Checks if input stream has the normRectTag
-    RET_CHECK(cc->Inputs().HasTag(normRectTag));
-    // Set normRectTag to receive a NormalizedRect as input
-    cc->Inputs().Tag(normRectTag).Set<NormalizedRect>();
+    //// Checks if input stream has the normRectTag
+    //RET_CHECK(cc->Inputs().HasTag(normRectTag));
+    //// Set normRectTag to receive a NormalizedRect as input
+    //cc->Inputs().Tag(normRectTag).Set<NormalizedRect>();
 
     // Check if output stream has tag recognizedHandGestureTag
     RET_CHECK(cc->Outputs().HasTag(recognizedHandGestureTag));
     // Set output stream to recognizedHandGesture string
-    cc->Outputs().Tag(recognizedHandGestureTag).Set<std::string>();
+    // cc->Outputs().Tag(recognizedHandGestureTag).Set<std::string>(); //jasonj
+    cc->Outputs().Tag(recognizedHandGestureTag).Set<GestureText>();
 
     return ::mediapipe::OkStatus();
 }
@@ -73,23 +74,23 @@ REGISTER_CALCULATOR(GestureRecognizerCalculator);
 
 ::mediapipe::Status GestureRecognizerCalculator::Process(CalculatorContext *cc)
 {
-    const auto rect = &(cc->Inputs().Tag(normRectTag).Get<NormalizedRect>());
+    //const auto rect = &(cc->Inputs().Tag(normRectTag).Get<NormalizedRect>());
 
-    float width = rect->width();
-    float height = rect->height();
+    //float width = rect->width();
+    //float height = rect->height();
 
     // string variable to hold gesture text
     std::string *gesture_text;
 
-    if (width < 0.01 || height < 0.01)
-    {
-        gesture_text = new std::string("Finding hand");
-        LOG(INFO) << "No hand detected";
+    //if (width < 0.01 || height < 0.01)
+    //{
+        //gesture_text = new std::string("Finding hand");
+        //LOG(INFO) << "No hand detected";
 
-        cc->Outputs().Tag(recognizedHandGestureTag).Add(gesture_text, cc->InputTimestamp());
+        //cc->Outputs().Tag(recognizedHandGestureTag).Add(gesture_text, cc->InputTimestamp());
 
-        return ::mediapipe::OkStatus();
-    }
+        //return ::mediapipe::OkStatus();
+    //}
 
     const auto &landmarkList = cc->Inputs().Tag(normalizedLandmarkListTag).Get<NormalizedLandmarkList>();
     // const auto &landmark_vector = cc->Inputs().Tag(normalizedLandmarkListTag).Get<std::vector<NormalizedLandmarkList>>();
@@ -201,7 +202,10 @@ REGISTER_CALCULATOR(GestureRecognizerCalculator);
     }
 
     // We set output stream to recognized hand gesture text
-    cc->Outputs().Tag(recognizedHandGestureTag).Add(gesture_text, cc->InputTimestamp());
+    //cc->Outputs().Tag(recognizedHandGestureTag).Add(gesture_text, cc->InputTimestamp()); //jasonj
+    GestureText* t = new GestureText();
+    t->set_text(*gesture_text);
+    cc->Outputs().Tag(recognizedHandGestureTag).Add(t, cc->InputTimestamp());
 
     return ::mediapipe::OkStatus();
 }
